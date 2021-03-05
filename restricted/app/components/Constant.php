@@ -1,0 +1,10 @@
+<?php
+namespace App\components;
+
+class Constant {
+    CONST ROLE_ADMIN = 1;
+    CONST ROLE_NETIZEN = 2;
+    CONST USERSTATUS_PENDING = 0;
+    CONST USERSTATUS_KONFIRMASI = 1;
+    CONST USERSTATUS_NONAKTIF = 2;
+}
