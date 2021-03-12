@@ -8,7 +8,14 @@
   integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
   crossorigin=""></script>
 <style>
-    #jarakAirDariSensor, #mapid, #grafikAir, #weather, #grafikBaterai { height: 220px;width: 100%;display:block;margin: auto; overflow: hidden }
+    #sinyal{
+        height: 190px;
+        width: 100%;
+        display:block;
+        margin: auto;
+        overflow: hidden;
+    }
+    #mapid, #grafikAir, #weather, #grafikBaterai { height: 220px;width: 100%;display:block;margin: auto; overflow: hidden }
     .col-centered{
         margin: 0 auto;
         float: none;
@@ -34,8 +41,8 @@
             <div class="box">
                 <div class="box-body">
                     <h3 style="text-align:center;padding: 5px 5px 10px;color: white">Ketinggian Sungai</h3>
-                    <div id="meter"></div>
-                    <h4 style="text-align:center;padding: 5px 5px 10px;color: white">20 / 100</h4>
+                    <div id="ketinggian_air_chart"></div>
+                    <h4 style="text-align:center;padding: 5px 5px 10px;color: white" id="ketinggian_air_value">20 / 100</h4>
                 </div>
             </div>
         </div>
@@ -70,7 +77,10 @@
         <div class="col-md-2  mt-1">
             <div class="box">
                 <div class="box-body">
-                    <canvas id="jarakAirDariSensor"></canvas>
+                    <div>
+                        <canvas id="sinyal"></canvas>
+                    </div>
+                    <h4 id="sinyal_value" style="text-align:center;padding: 5px 5px 10px;color: white">45 / 70</h4>
                 </div>
             </div>
         </div>
@@ -78,9 +88,9 @@
             <div class="box">
                 <div class="box-body">
                     
-                    <h3 style="text-align:center;padding: 5px 5px 10px;color: white">Ketinggian Sungai</h3>
-                    <div id="meter2"></div>
-                    <h4 style="text-align:center;padding: 5px 5px 10px;color: white">45 / 70</h4>
+                    <h3 style="text-align:center;padding: 5px 5px 10px;color: white">Volume Baterai</h3>
+                    <div id="baterai_chart"></div>
+                    <h4 id="baterai_value" style="text-align:center;padding: 5px 5px 10px;color: white">45 / 70</h4>
                 </div>
             </div>
         </div>
@@ -99,97 +109,6 @@
 @section('js')
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
 <script>
-    var barChart = document.getElementById('grafikAir').getContext('2d');
-    Chart.defaults.global.defaultFontColor = 'white';
-    var myBarChart = new Chart(barChart, {
-        type: 'line',
-        data: {
-            labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-            datasets: [{
-                label: "Trend Level Sungai",
-                backgroundColor: 'rgb(255, 255, 255, 0)',
-                borderColor: 'rgb(255, 140, 140)',
-                data: [3, 2, 9, 5, 4, 6, 4, 6, 7, 8, 7, 4],
-            }],
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                yAxes: [{
-                    ticks: {
-                        beginAtZero: true
-                    }
-                }]
-            },
-            legend: {
-                labels: {
-                    fontColor: "white"
-                }
-            }
-        }
-    });
-    var barChart = document.getElementById('grafikBaterai').getContext('2d');
-    Chart.defaults.global.defaultFontColor = 'white';
-    var myBarChart = new Chart(barChart, {
-        type: 'line',
-        data: {
-            labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-            datasets: [{
-                label: "Trend Voltase Baterai",
-                backgroundColor: 'rgb(255, 255, 255, 0)',
-                borderColor: 'rgb(255, 255, 255)',
-                data: [3, 2, 9, 5, 4, 6, 4, 6, 7, 8, 7, 4],
-            }],
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                yAxes: [{
-                    ticks: {
-                        beginAtZero: true
-                    }
-                }]
-            },
-            legend: {
-                labels: {
-                    fontColor: "white"
-                }
-            }
-        }
-    });
-    var jarakAirDariSensor = document.getElementById('jarakAirDariSensor').getContext('2d');
-    var myChart = new Chart(jarakAirDariSensor, {
-        type: "doughnut",
-        data: {
-            labels: ["Jarak Air Dari Sensor"],
-            datasets: [
-            {
-                label: ["# of Votes"],
-                data: [45, 55],
-                backgroundColor: ["rgba(255, 99, 132, 0.2)"],
-                borderColor: ["rgba(255,99,132,1)"],
-                borderWidth: 1
-            }
-            ]
-        },
-        options: {
-            legend: {
-                hidden: true
-            },
-            maintainAspectRatio: false,
-            circumference: Math.PI + 1,
-            rotation: -Math.PI - 0.5,
-            cutoutPercentage: 20,
-
-            onClick(...args) {
-            console.log(args);
-            }
-        }
-        });
-
-
     let setup = async () => {
         var mymap = L.map('mapid').setView([-8.0735, 111.9164], 12);
         L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
@@ -210,29 +129,112 @@
 
     main();
 
-    let meter = document.querySelector("#meter");
+    $(function(){
+        setInterval(function(){
+            $.ajax({
+                url: "<?= url('/api/log/data') ?>",
+                method: "get"
+            }).then(response => {
+                if(response.success){
+                    $("#ketinggian_air_value").html(response.data.ketinggian_air.value)
+                    buildBatteraiChart("ketinggian_air_chart", response.data.ketinggian_air.bar);
+                    $("#baterai_value").html(response.data.baterai.value);
+                    buildBatteraiChart("baterai_chart", response.data.baterai.bar);
+                    speedMeter("sinyal", response.data.sinyal.data);
+                    $("#sinyal_value").html(response.data.sinyal.value);
 
-    meter.setAttribute("style", "display:block;width: 65%; height: 160px;margin: auto;border: 1px solid #fff;border-radius:5%;padding: 10px");
-    meter.innerHTML += `
-    <div style="display: flex;flex-direction: column;height:100%;align-self:end;align-content:flex-end">
-        <div style="display: block;background: transparent;width: 100%;height: 10px; flex-grow: 1;flex:1"></div>
-        <div style="display: block;background: transparent;width: 100%;height: 10px; flex-grow: 1;flex:1"></div>
-        <div style="display: block;background: transparent;width: 100%;height: 10px; flex-grow: 1;flex:1"></div>
-        <div style="display: block;background: rgba(255, 255, 255, .3);width: 100%;height: 10px; flex-grow: 1;flex:1"></div>
-        <div style="display: block;background: rgba(255, 255, 255, .3);width: 100%;height: 10px; flex-grow: 1;flex:1"></div>
-    </div>`;
-    
-    meter = document.querySelector("#meter2");
+                    
+                    grafik("grafikAir", response.data.trend_level, "Trend Level Sungai");
+                    grafik("grafikBaterai", response.data.trend_voltase, "Trend Voltase Baterai");
+                }
+            });
+        }, 3000);
+    });
 
-    meter.setAttribute("style", "display:block;width: 65%; height: 160px;margin: auto;border: 1px solid #fff;border-radius:5%;padding: 10px");
-    meter.innerHTML += `
-    <div style="display: flex;flex-direction: column;height:100%;align-self:end;align-content:flex-end">
-        <div style="display: block;background: transparent;width: 100%;height: 10px; flex-grow: 1;flex:1"></div>
-        <div style="display: block;background: rgba(255, 255, 255, .3);width: 100%;height: 10px; flex-grow: 1;flex:1"></div>
-        <div style="display: block;background: rgba(255, 255, 255, .3);width: 100%;height: 10px; flex-grow: 1;flex:1"></div>
-        <div style="display: block;background: rgba(255, 255, 255, .3);width: 100%;height: 10px; flex-grow: 1;flex:1"></div>
-        <div style="display: block;background: rgba(255, 255, 255, .3);width: 100%;height: 10px; flex-grow: 1;flex:1"></div>
-    </div>`;
+    function grafik(id, data, label){
+        let barChart = document.getElementById(id).getContext('2d');
+        Chart.defaults.global.defaultFontColor = 'white';
+        let myBarChart = new Chart(barChart, {
+            type: 'line',
+            data: {
+                labels: data.label,
+                datasets: [{
+                    label: label,
+                    backgroundColor: 'rgb(255, 255, 255, 0)',
+                    borderColor: 'rgb(255, 255, 255)',
+                    data: data.data,
+                }],
+            },
+            options: {
+                animation:false,
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                },
+                legend: {
+                    labels: {
+                        fontColor: "white"
+                    }
+                }
+            }
+        });
+    }
 
+    function speedMeter(id, data){
+        let source = document.getElementById(id).getContext('2d');
+        var myChart = new Chart(source, {
+            type: "doughnut",
+            data: {
+                labels: ["Sinyal"],
+                datasets: [
+                {
+                    label: ["# of Votes"],
+                    data: data,
+                    backgroundColor: ["rgba(255, 99, 132, 0.2)"],
+                    borderColor: ["rgba(255,99,132,1)"],
+                    borderWidth: 1
+                }
+                ]
+            },
+            options: {
+                animation:false,
+                legend: {
+                    hidden: true
+                },
+                maintainAspectRatio: false,
+                circumference: Math.PI + 1,
+                rotation: -Math.PI - 0.5,
+                cutoutPercentage: 20,
+
+                onClick(...args) {
+                console.log(args);
+                }
+            }
+        });
+    }
+
+    function buildBatteraiChart(id, val){
+
+        let meter = document.querySelector("#"+id);
+        let bar = "";
+        let blank = 6 - val;
+        for(i=0; i <= blank; i++) {
+            bar += `<div style="display: block;background: transparent;width: 100%;height: 10px; flex-grow: 1;flex:1"></div>`;
+        }
+        for(i=0; i <= val; i++) {
+            bar += `<div style="display: block;background: rgba(255, 255, 255, .3);width: 100%;height: 10px; flex-grow: 1;flex:1"></div>`;
+        }
+
+        meter.setAttribute("style", "display:block;width: 65%; height: 160px;margin: auto;border: 1px solid #fff;border-radius:5%;padding: 10px");
+        meter.innerHTML = `
+        <div style="display: flex;flex-direction: column;height:100%;align-self:end;align-content:flex-end">
+            ${bar}
+        </div>`;
+    }
 </script>
 @endsection

@@ -18,4 +18,5 @@ Route::middleware(['log.route'])->group(function () {
     Route::get("/chart-informasi-warga", ['App\Http\Controllers\Web\ChartController', 'chartInformasiWarga'])->name('api.chart.index');
     Route::post("/log", ['App\Http\Controllers\Api\LogController', 'store'])->name('api.log.store');
     Route::get("/log", ['App\Http\Controllers\Api\LogController', 'index'])->name('api.log.index');
+    Route::get("/log/data", ['App\Http\Controllers\Api\LogController', 'actionDataTable'])->name('api.log.index');
 });
